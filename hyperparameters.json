@@ -1,0 +1,10 @@
+{
+  "training": {
+    "target": "response",
+    "classification": "true"
+  },
+  "h2o": {},
+  "aml": {
+    "max_runtime_secs": 60
+  }
+}
