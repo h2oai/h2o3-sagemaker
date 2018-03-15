@@ -1,0 +1,165 @@
+#!/usr/bin/env python
+
+"""
+Adapted from https://github.com/awslabs/amazon-sagemaker-examples/blob/master/advanced_functionality/scikit_bring_your_own/container/decision_trees/train
+
+Simple example that integrates H2o AutoML functionality with Amazon Sagemaker.
+AutoML docs are over at:
+http://h2o-release.s3.amazonaws.com/h2o/rel-wheeler/2/docs-website/h2o-docs/automl.html
+
+This implementation works in File mode and makes no assumptions about the input
+file names. Input is specified as CSV with a data point in each row, the label
+column is specified via an optional hyperparamter 'response_label'. If there's
+no response label specified, we default to 'response' as the response label for
+the data
+"""
+
+from __future__ import print_function
+
+import h2o
+import json
+import os
+import pickle
+import sys
+import traceback
+
+from h2o.automl import H2OAutoML
+
+# Sagemaker expects things to go here
+prefix = '/opt/ml/'
+
+input_path = prefix + 'input/data'
+output_path = os.path.join(prefix, 'output')
+model_path = os.path.join(prefix, 'model')
+param_path = os.path.join(prefix, 'config/hyperparameters.json')
+
+if os.path.isfile(param_path):
+    with open(param_path, 'r') as pf:
+        all_params = json.load(pf)
+        print (param_path)
+        print ('All Parameters:')
+        print (all_params)
+
+training_params = all_params['training']
+h2o_params = all_params['h2o']
+aml_params = all_params['aml']
+# Initialize the H2o server, so that we can perform training using the
+# Python wrapper
+
+h2o.init(**h2o_params)
+
+# We use two sets of training data, one being the plain training data, and
+# the other being the test data. For the purposes of this proof-of-concept,
+# we *require* both training and test data, but eventually we will move to
+# a model where only submitting training data will be fine, and will
+# automatically use something like cross-validation.
+
+
+# Sagemaker training channel for input training data
+channel_name = 'training'
+training_path = os.path.join(input_path, channel_name)
+
+# Sagemaker testing channel for input test data
+test_channel_name = 'testing'
+test_path = os.path.join(input_path, test_channel_name)
+
+
+def train():
+    print('Beginning model training')
+    try:
+        # Read training and validation files. We read all files but only use
+        # one file ( the first one ). Need to change this eventually
+        train_files = [os.path.join(training_path, file)
+                       for file in os.listdir(training_path)
+                       if not file.startswith('.')]
+        test_files = [os.path.join(test_path, file)
+                      for file in os.listdir(test_path)
+                      if not file.startswith('.')]
+
+        if len(train_files) == 0:
+            raise ValueError(('There are no files in {}.\n' +
+                              'This usually indicates that the channel ({}) '
+                              'was incorrectly specified,\n' +
+                              'the data specification in S3 was incorrectly '
+                              'specified or the role specified\n' +
+                              'does not have permission to access the '
+                              'data.').format(training_path, channel_name))
+        elif len(test_path) == 0:
+            # @TODO - Use CV instead of erroring if there's no test data
+            raise ValueError(('There are no test files present!'))
+
+        # HACK warning
+        # Currently assumes that there's just a single training file, and a
+        # single validation file. This hack is in place to ensure that Sagemaker
+        # works as expected, but once that's working okay, it's a good move
+        # to handle multiple files and concatenate them, handle both PIPE and
+        # FILE modes of SageMaker, etc.
+        training_file = train_files[0]
+        test_file = test_files[0]
+
+        train = h2o.import_file(training_file)
+        test = h2o.import_file(test_file)
+
+        # Hyperparameters - Currently only supporting the response column label
+        # as a hyperparamter since this is a proof of concept. Eventually, we
+        # should be able to support all hyperparameters that H2o AutoML supports.
+
+        # The repsonse_label is a string anyway, so we don't need to bother
+        # with conversions into integer etc. However, if you add parameters
+        # that are not of the type string, factor in that you'll need to
+        # explicitly convert them into the right types for this to work right.
+        response_label = training_params.get('target', 'label')
+
+        X = train.columns
+        y = response_label
+        print (X)
+        print (y)
+
+        # We don't want the response_label column present in the training
+        X.remove(y)
+
+        # Current proof-of-concept for classification, so we make the response's
+        # factors to ensure that H2o AutoML treats this as a classification
+        # problem
+        if training_params['classification'] == 'true':
+            print('CLASSIFICATION')
+            train[y] = train[y].asfactor()
+            test[y] = test[y].asfactor()
+        else:
+            print('REGRESSION')
+
+        # Actual training - we're mandating test data so that the leaderboard
+        # is based off the test data.
+        aml = H2OAutoML(**aml_params)
+        aml.train(x = X, y = y,
+                  training_frame = train,
+                  leaderboard_frame = test)
+
+        # Print some stuff from the AutoML leaderboard so that there's
+        # context on the models that have done well and the models that
+        # haven't done well. This is very useful information to pass on
+        # at the end of a training run, because it's good to have context on
+        # all the models that were tried and the metrics for each of them.
+        print(aml.leaderboard)
+
+        # Save the leader as the model.
+        h2o.save_model(aml.leader, path=model_path)
+        print('Training complete.')
+    except Exception as e:
+        # Write out an error file. This will be returned as the failureReason
+        # in the DescribeTrainingJob result.
+        trc = traceback.format_exc()
+        with open(os.path.join(output_path, 'failure'), 'w') as s:
+            s.write('Exception during training: ' + str(e) + '\n' + trc)
+
+        # Printing this causes the exception to be in the training job logs
+        print('Exception during training: ' + str(e) + '\n' + trc,
+              file=sys.stderr)
+        # A non-zero exit code causes the training job to be marked as Failed.
+        sys.exit(255)
+
+if __name__ == '__main__':
+    train()
+
+    # A zero exit code causes the job to be marked a Succeeded.
+    sys.exit(0)
