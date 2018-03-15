@@ -2,7 +2,7 @@
 
 Proof-of-Concept for integrating H2O-3 AutoML with Amazon SageMaker
 
-Content of Repo, See below for explanation of files:
+#### Content of Repo, See below for explanation of files:
 - README.md
 - Dockerfile
 - hyperparameters.json
