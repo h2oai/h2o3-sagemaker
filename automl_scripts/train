@@ -33,6 +33,10 @@ output_path = os.path.join(prefix, 'output')
 model_path = os.path.join(prefix, 'model')
 param_path = os.path.join(prefix, 'config/hyperparameters.json')
 
+# Ingest parameters for training from file hyperparameters.json
+# training_params --> parameters for how the training should run
+# h2o_params --> kwargs for h2o.init()
+# aml_params --> kwargs for H2OAutoML()
 if os.path.isfile(param_path):
     with open(param_path, 'r') as pf:
         all_params = json.load(pf)
@@ -53,7 +57,6 @@ h2o.init(**h2o_params)
 # we *require* both training and test data, but eventually we will move to
 # a model where only submitting training data will be fine, and will
 # automatically use something like cross-validation.
-
 
 # Sagemaker training channel for input training data
 channel_name = 'training'
@@ -100,14 +103,9 @@ def train():
         train = h2o.import_file(training_file)
         test = h2o.import_file(test_file)
 
-        # Hyperparameters - Currently only supporting the response column label
-        # as a hyperparamter since this is a proof of concept. Eventually, we
-        # should be able to support all hyperparameters that H2o AutoML supports.
-
-        # The repsonse_label is a string anyway, so we don't need to bother
-        # with conversions into integer etc. However, if you add parameters
-        # that are not of the type string, factor in that you'll need to
-        # explicitly convert them into the right types for this to work right.
+        # We expect the label for the target column to be a string.
+        # As long as the data imported is of an acceptable file type supported
+        # by H2O # and AutoML there should not be a problem
         response_label = training_params.get('target', 'label')
 
         X = train.columns
@@ -115,12 +113,14 @@ def train():
         print (X)
         print (y)
 
-        # We don't want the response_label column present in the training
+        # We don't want the target column present in the training
         X.remove(y)
 
-        # Current proof-of-concept for classification, so we make the response's
-        # factors to ensure that H2o AutoML treats this as a classification
-        # problem
+        # Handles user input for running AutoML as classification or regression
+        # AutoML automatically detects the variable type of input column and
+        # trains models as regression or classification accordingly.
+        # setting an integer as a factor will result in training as a
+        # classification problem.
         if training_params['classification'] == 'true':
             print('CLASSIFICATION')
             train[y] = train[y].asfactor()
@@ -135,11 +135,8 @@ def train():
                   training_frame = train,
                   leaderboard_frame = test)
 
-        # Print some stuff from the AutoML leaderboard so that there's
-        # context on the models that have done well and the models that
-        # haven't done well. This is very useful information to pass on
-        # at the end of a training run, because it's good to have context on
-        # all the models that were tried and the metrics for each of them.
+        # Print leaderboard from AutoML to provide context about the model
+        # scoring and selection process.
         print(aml.leaderboard)
 
         # Save the leader as the model.
