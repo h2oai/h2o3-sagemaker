@@ -33,5 +33,5 @@ ENV PATH="/opt/program:${PATH}"
 
 # Set up the program in the image
 COPY automl_scripts /opt/program
-COPY hyperparameters.json h2o_params.json aml_params.json /opt/ml/config/
+COPY hyperparameters.json /opt/ml/config/
 WORKDIR /opt/program
