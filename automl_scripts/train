@@ -52,32 +52,19 @@ aml_params = all_params['aml']
 
 h2o.init(**h2o_params)
 
-# We use two sets of training data, one being the plain training data, and
-# the other being the test data. For the purposes of this proof-of-concept,
-# we *require* both training and test data, but eventually we will move to
-# a model where only submitting training data will be fine, and will
-# automatically use something like cross-validation.
-
 # Sagemaker training channel for input training data
 channel_name = 'training'
 training_path = os.path.join(input_path, channel_name)
-
-# Sagemaker testing channel for input test data
-test_channel_name = 'testing'
-test_path = os.path.join(input_path, test_channel_name)
 
 
 def train():
     print('Beginning model training')
     try:
-        # Read training and validation files. We read all files but only use
+        # Read training file. We read all files but only use
         # one file ( the first one ). Need to change this eventually
         train_files = [os.path.join(training_path, file)
                        for file in os.listdir(training_path)
                        if not file.startswith('.')]
-        test_files = [os.path.join(test_path, file)
-                      for file in os.listdir(test_path)
-                      if not file.startswith('.')]
 
         if len(train_files) == 0:
             raise ValueError(('There are no files in {}.\n' +
@@ -87,21 +74,15 @@ def train():
                               'specified or the role specified\n' +
                               'does not have permission to access the '
                               'data.').format(training_path, channel_name))
-        elif len(test_path) == 0:
-            # @TODO - Use CV instead of erroring if there's no test data
-            raise ValueError(('There are no test files present!'))
 
         # HACK warning
-        # Currently assumes that there's just a single training file, and a
-        # single validation file. This hack is in place to ensure that Sagemaker
+        # Currently assumes that there's just a single training file. 
+        # This hack is in place to ensure that Sagemaker
         # works as expected, but once that's working okay, it's a good move
         # to handle multiple files and concatenate them, handle both PIPE and
         # FILE modes of SageMaker, etc.
         training_file = train_files[0]
-        test_file = test_files[0]
-
         train = h2o.import_file(training_file)
-        test = h2o.import_file(test_file)
 
         # We expect the label for the target column to be a string.
         # As long as the data imported is of an acceptable file type supported
@@ -124,19 +105,16 @@ def train():
         if training_params['classification'] == 'true':
             print('CLASSIFICATION')
             train[y] = train[y].asfactor()
-            test[y] = test[y].asfactor()
         else:
             print('REGRESSION')
 
-        # Actual training - we're mandating test data so that the leaderboard
-        # is based off the test data.
+        # Execute and AutoML run (limit to 10 base models)
         aml = H2OAutoML(**aml_params)
         aml.train(x = X, y = y,
-                  training_frame = train,
-                  leaderboard_frame = test)
+                  training_frame = train)
 
         # Print leaderboard from AutoML to provide context about the model
-        # scoring and selection process.
+        # scoring and selection process (shows 5-fold CV metrics).
         print(aml.leaderboard)
 
         # Save the leader as the model.

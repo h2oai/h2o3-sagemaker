@@ -5,6 +5,6 @@
   },
   "h2o": {},
   "aml": {
-    "max_runtime_secs": 60
+    "max_models": 10
   }
 }

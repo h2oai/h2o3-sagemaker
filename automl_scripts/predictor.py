@@ -127,7 +127,7 @@ def transformation():
     # Do the actual prediction using the AutoML model that's been loaded
     predictions = ScoringService.predict(h2o_prediction_frame)
 
-    # Convert from H2oframe -> Pandas -> CSV. Improve this workflow and remove
+    # Convert from H2OFrame -> Pandas DataFrame -> CSV. Improve this workflow and remove
     # the pandas dependency eventually. ( Works for a POC )
     out = StringIO.StringIO()
     results = h2o.as_list(predictions, use_pandas=True)
