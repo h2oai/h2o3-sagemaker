@@ -9,9 +9,21 @@ http://h2o-release.s3.amazonaws.com/h2o/rel-wheeler/2/docs-website/h2o-docs/auto
 
 This implementation works in File mode and makes no assumptions about the input
 file names. Input is specified as CSV with a data point in each row, the label
-column is specified via an optional hyperparamter 'response_label'. If there's
-no response label specified, we default to 'response' as the response label for
-the data
+column is specified via an optional hyperparamter - 'target', inside the
+'training_params' dictionary. If there's no target specified, we default to
+'label' as the target variable for the data.
+
+The hyperparameters.json file needs to have content similar to ->
+{
+'training': {
+                'classification': 'true',
+                'target': 'response',
+            },
+'h2o': { Insert any H2o specific parameters here },
+'aml': { Insert any parameters you want to specify for AutoML here - there's
+        more details at http://docs.h2o.ai/h2o/latest-stable/h2o-docs/automl.html }
+}
+
 """
 
 from __future__ import print_function
@@ -31,12 +43,20 @@ prefix = '/opt/ml/'
 input_path = prefix + 'input/data'
 output_path = os.path.join(prefix, 'output')
 model_path = os.path.join(prefix, 'model')
-param_path = os.path.join(prefix, 'config/hyperparameters.json')
+param_path = os.path.join(prefix, 'input/config/hyperparameters.json')
 
 # Ingest parameters for training from file hyperparameters.json
 # training_params --> parameters for how the training should run
 # h2o_params --> kwargs for h2o.init()
 # aml_params --> kwargs for H2OAutoML()
+
+# Initialize some default parameters so that things fail safely
+# if no parameters are specified
+all_params = {'training': {'classification': True,
+                           'target': 'label'},
+              'h2o': {},
+              'aml': {}}
+
 if os.path.isfile(param_path):
     with open(param_path, 'r') as pf:
         all_params = json.load(pf)
@@ -44,26 +64,27 @@ if os.path.isfile(param_path):
         print ('All Parameters:')
         print (all_params)
 
-training_params = all_params['training']
-h2o_params = all_params['h2o']
-aml_params = all_params['aml']
+training_params = all_params.get('training')
+h2o_params = all_params.get('h2o', {})
+aml_params = all_params.get('aml', {})
+
 # Initialize the H2o server, so that we can perform training using the
 # Python wrapper
-
 h2o.init(**h2o_params)
 
 # Sagemaker training channel for input training data
 channel_name = 'training'
 training_path = os.path.join(input_path, channel_name)
 
+
 def train():
     print('Beginning model training')
     try:
         # Read training file. We read all files but only use
         # one file ( the first one ). Need to change this eventually
-        train_files = [os.path.join(training_path, file)
-                       for file in os.listdir(training_path)
-                       if not file.startswith('.')]
+        train_files = [os.path.join(training_path, filename)
+                       for filename in os.listdir(training_path)
+                       if not filename.startswith('.')]
 
         if len(train_files) == 0:
             raise ValueError(('There are no files in {}.\n' +
@@ -86,31 +107,34 @@ def train():
         # We expect the label for the target column to be a string.
         # As long as the data imported is of an acceptable file type supported
         # by H2O # and AutoML there should not be a problem
-        response_label = training_params.get('target', 'label')
+        response_label = training_params.get('target')
 
         X = train.columns
         y = response_label
-        print (X)
-        print (y)
 
         # We don't want the target column present in the training
-        X.remove(y)
+        try:
+            X.remove(y)
+        except ValueError:
+            raise ValueError('Incorrect target - column "%s" does not exist in the data!' % response_label)
 
         # Handles user input for running AutoML as classification or regression
         # AutoML automatically detects the variable type of input column and
         # trains models as regression or classification accordingly.
         # setting an integer as a factor will result in training as a
         # classification problem.
-        if training_params['classification'] == 'true':
-            print('CLASSIFICATION')
+        if training_params.get('classification') == 'true':
+            print('Classification - If you want to do a regression instead, '
+                  'set "classification":"false" in the training_params dictionary in '
+                  'hyperparamters.json')
             train[y] = train[y].asfactor()
         else:
-            print('REGRESSION')
+            print('Regression - If you are solving a classification problem, '
+                  'set "classification":"true" in the training params dictionary')
 
         # Execute and AutoML run (limit to 10 base models)
         aml = H2OAutoML(**aml_params)
-        aml.train(x = X, y = y,
-                  training_frame = train)
+        aml.train(x=X, y=y, training_frame=train)
 
         # Print leaderboard from AutoML to provide context about the model
         # scoring and selection process (shows 5-fold CV metrics).
