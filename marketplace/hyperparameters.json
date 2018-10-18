@@ -1,0 +1,10 @@
+{
+  "training": {
+    "target": "response",
+    "classification": "true"
+  },
+  "aml": {
+      "max_models": 10
+  }
+}
+
