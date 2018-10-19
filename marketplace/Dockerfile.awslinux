@@ -49,5 +49,6 @@ ENV PATH="/opt/program:${PATH}"
 # Set up the program in the image
 COPY automl_scripts /opt/program
 RUN chmod +x /opt/program/startup_h2o_cluster.sh
+RUN chmod +x /opt/program/startup_h2o_cluster_serve.sh
 COPY hyperparameters.json /opt/program/hyperparameters.json
 WORKDIR /opt/program

@@ -1,10 +1,5 @@
 {
-  "training": {
-    "target": "response",
-    "classification": "true"
-  },
-  "aml": {
-      "max_models": 10
-  }
+  "training": "{'target': 'response', 'classification': 'true'}",
+  "aml": "{'max_models': 10}"
 }
 

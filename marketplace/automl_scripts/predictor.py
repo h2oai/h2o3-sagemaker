@@ -20,15 +20,11 @@ import time
 import pandas as pd
 from io import StringIO
 from h2o.exceptions import H2OError
-from h2o.frame import H2OFrame
 
 
 # This is where our training script saves the model that was generated
 prefix = '/opt/ml/'
 model_path = os.path.join(prefix, 'model')
-
-print("Starting H2O-3 Cluster")
-os.system("./startup_h2o_cluster.sh > h2o.log 2> h2o_error.log &")
 
 print("Creating Connection to H2O-3")
 h2o_launched = False
