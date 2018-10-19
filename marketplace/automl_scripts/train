@@ -1,0 +1,229 @@
+#!/usr/bin/env python3
+
+"""
+Simple example that integrates H2o AutoML functionality with Amazon Sagemaker.
+AutoML docs are over at:
+http://h2o-release.s3.amazonaws.com/h2o/rel-wheeler/2/docs-website/h2o-docs/automl.html
+
+This implementation works in File mode and makes no assumptions about the input
+file names. Input is specified as CSV with a data point in each row, the label
+column is specified via an optional hyperparamter - 'target', inside the
+'training_params' dictionary. If there's no target specified, we default to
+'label' as the target variable for the data.
+
+The hyperparameters.json file needs to have content similar to ->
+{
+'training': {
+                'classification': 'true',
+                'target': 'response',
+            },
+'h2o': { Insert any H2O specific parameters here },
+'aml': { Insert any parameters you want to specify for AutoML here -
+        docs: http://docs.h2o.ai/h2o/latest-stable/h2o-docs/automl.html}
+}
+
+"""
+
+from __future__ import print_function
+
+import json
+import os
+import sys
+import traceback
+import time
+import socket
+from collections import Counter
+import h2o
+from h2o.automl import H2OAutoML
+
+
+def _dns_lookup(host):
+    counter = 0
+    dns_resolved = False
+    while dns_resolved is False:
+        try:
+            print(socket.gethostbyname(host))
+            dns_resolved = True
+        except Exception as e:
+            time.sleep(10)
+            counter += 1
+            print("Waiting until DNS resolves: {}".format(counter))
+            if counter > 10:
+                raise Exception("Could not resolve DNS for Host: {}".format(host))
+
+
+def _get_parameters():
+    # Sagemaker expects things to go here
+    prefix = '/opt/ml/'
+    param_path = os.path.join(prefix, 'input/config/hyperparameters.json')
+    demo_path = '/opt/program/hyperparameters.json'
+    resource_path = os.path.join(prefix, 'input/config/resourceconfig.json')
+    user_config = False
+    # Ingest parameters for training from file hyperparameters.json
+    # Initialize some default parameters so that things fail safely
+    # if no parameters are specified
+
+    if os.path.isfile(param_path):
+        with open(param_path, 'r') as pf:
+            hyperparameters = json.load(pf)
+            user_config = True
+            print(param_path)
+            print('All Parameters:')
+            print(hyperparameters)
+
+    if hyperparameters == {}:
+        print("No hyperparameters were provided")
+        print("Falling back to demo hyperparameters path")
+        if os.path.isfile(demo_path):
+            with open(demo_path, 'r') as df:
+                hyperparameters = json.load(df)
+                print(demo_path)
+                print('All Parameters:')
+                print(hyperparameters)
+        else:
+            print("Demo file does not exist, falling back to defaults")
+            hyperparameters = {'training': {'classification': True,
+                                            'target': 'label'},
+                               'aml': {}}
+
+    if os.path.isfile(resource_path):
+        with open(resource_path, 'r') as rf:
+            resource_params = json.load(rf)
+            print(resource_path)
+            print('All Resources:')
+            print(resource_params)
+
+    return hyperparameters, resource_params, user_config
+
+
+def _create_h2o_cluster(resource_params={}):
+
+    with open("flatfile.txt", "w") as flatfile:
+        for host in resource_params['hosts']:
+            flatfile.write("{}:54321\n".format(host))
+        for host in resource_params['hosts']:
+            _dns_lookup(host)
+
+    os.system("./startup_h2o_cluster.sh > h2o.log 2> h2o_error.log &")
+    print("Starting up H2O-3")
+
+
+def _connect_to_cluster():
+    print("Creating Connection to H2O-3")
+    h2o_launched = False
+    i = 0
+    while h2o_launched is False:
+        try:
+            s = socket.socket()
+            s.connect(("127.0.0.1", 54321))
+            h2o_launched = True
+        except Exception as e:
+            time.sleep(6)
+            if i % 5 == 0:
+                print("Attempt {}: H2O-3 not running yet...".format(i))
+            if i > 30:
+                raise Exception("""Could not connect to H2O Cluster in {} attempts
+                                   Last Error: {}""".format(i, e))
+            i += 1
+        finally:
+            s.close()
+
+    h2o.connect(url="http://127.0.0.1:54321")
+
+
+def _get_data(channel_name, hyperparameters={}):
+    prefix = "/opt/ml/"
+    input_path = prefix + 'input/data'
+    training_path = os.path.join(input_path, channel_name)
+    data_files = [os.path.join(training_path, filename)
+                  for filename in os.listdir(training_path)
+                  if not filename.startswith(".")]
+    if len(data_files) == 0:
+        raise ValueError(('There are no files in {}.\n' +
+                          'This usually indicates that the channel ({}) '
+                          'was incorrectly specified,\n' +
+                          'the data specification in S3 was incorrectly '
+                          'specified or the role specified\n' +
+                          'does not have permission to access the '
+                          'data.').format(training_path, channel_name))
+    elif len(data_files) == 1:
+        import_data = h2o.import_file(data_files[0])
+    else:
+        prefix = os.path.commonprefix(data_files)
+        suffix_counter = Counter()
+        for filename in data_files:
+            suffix_counter[filename.split(".")[-1]] += 1
+        suffix = suffix_counter.most_common(1)[0][0]
+        import_data = h2o.import_file(path=training_path,
+                                      pattern="{}.*\{}".format(prefix, suffix))
+
+    return import_data
+
+
+def _train_model(user_config, hyperparameters={}, resource_params={}):
+    if user_config:
+        aml_params = json.loads(hyperparameters["aml"].replace("'", '"'))
+        training_params = json.loads(hyperparameters["training"].replace("'", '"'))
+    else:
+        aml_params = hyperparameters["aml"]
+        training_params = hyperparameters["training"]
+    prefix = "/opt/ml/"
+    output_path = os.path.join(prefix, 'output')
+    model_path = os.path.join(prefix, 'model')
+
+    print("Beginning Model Training")
+    try:
+        response_label = training_params.get('target')
+        train_data = _get_data('training', hyperparameters)
+
+        X = train_data.columns
+        y = response_label
+
+        # We don't want the target column present in the training
+        try:
+            X.remove(y)
+        except ValueError:
+            raise ValueError('Incorrect target - column "%s" does not exist in the data!' % response_label)
+
+        if training_params.get('classification') == 'true':
+            print('Classification - If you want to do a regression instead, '
+                  'set "classification":"false" in the training_params dictionary in '
+                  'hyperparamters.json')
+            train_data[y] = train_data[y].asfactor()
+        else:
+            print('Regression - If you are solving a classification problem, '
+                  'set "classification":"true" in the training params dictionary')
+
+        aml = H2OAutoML(**aml_params)
+        aml.train(x=X, y=y, training_frame=train_data)
+
+        print(aml.leaderboard)
+
+        h2o.save_model(aml.leader, path=model_path)
+        print('Training complete.')
+    except Exception as e:
+        # Write out an error file. This will be returned as the failureReason
+        # in the DescribeTrainingJob result.
+        trc = traceback.format_exc()
+        with open(os.path.join(output_path, 'failure'), 'w') as s:
+            s.write('Exception during training: ' + str(e) + '\n' + trc)
+
+        # Printing this causes the exception to be in the training job logs
+        print('Exception during training: ' + str(e) + '\n' + trc,
+              file=sys.stderr)
+        # A non-zero exit code causes the training job to be marked as Failed.
+        sys.exit(255)
+
+
+def main():
+    hyperparameters, resource_params, user_config = _get_parameters()
+    _create_h2o_cluster(resource_params)
+    if resource_params["current_host"] == resource_params["hosts"][0]:
+        _connect_to_cluster()
+        _train_model(user_config, hyperparameters, resource_params)
+
+
+if __name__ == '__main__':
+    main()
+    # A zero exit code causes the job to be marked a Succeeded.
+    sys.exit(0)
