@@ -62,7 +62,7 @@ class ScoringService(object):
                 # that satisfies this constraint, so caveat emptor if you've
                 # run the 'train' script multiple times - this may still load
                 # the first model. An obvious to-do is to improve this :-)
-                if 'AutoML' in file:
+                if 'GeneralLinear' in file:
                     cls.model = h2o.load_model(os.path.join(model_path, file))
                     break
         return cls.model

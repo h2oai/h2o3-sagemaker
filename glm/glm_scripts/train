@@ -34,7 +34,7 @@ import time
 import socket
 from collections import Counter
 import h2o
-from h2o.automl import H2OAutoML
+from h2o.estimators.glm import H2OGeneralizedLinearEstimator
 
 
 def _dns_lookup(host):
@@ -199,12 +199,14 @@ def _train_model(user_config, hyperparameters={}, resource_params={}):
         for col in categorical_columns:
             train_data[col] = train_data[col].asfactor()
 
-        aml = H2OAutoML(**glm_params)
-        aml.train(x=X, y=y, training_frame=train_data)
+        glm_model = H2OGeneralizedLinearEstimator(**glm_params)
+        glm_model.train(x=X, y=y, training_frame=train_data)
 
-        print(aml.leaderboard)
+        print(glm_model._model_json['output']['coefficients_table'])
+        glm_model.std_coef_plot()
 
-        h2o.save_model(aml.leader, path=model_path)
+        model_path = h2o.save_model(glm_model, path=model_path)
+        print("Model Path with Name: {}".format(model_path))
         print('Training complete.')
     except Exception as e:
         # Write out an error file. This will be returned as the failureReason

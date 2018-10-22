@@ -1,5 +1,5 @@
 {
-  "training": "{'target': 'response', 'classification': 'true'}",
-  "aml": "{'max_models': 10}"
+  "training": "{'target': 'response', 'family': 'binomial', 'categorical_columns': ''}",
+  "aml": "{'_lambda': 0, 'compute_p_values': 'True'}"
 }
 
