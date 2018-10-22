@@ -174,7 +174,10 @@ def _train_model(user_config, hyperparameters={}, resource_params={}):
     print("Beginning Model Training")
     try:
         response_label = training_params.get('target')
-        categorical_columns = hyperparameters.get("categorical_columns", "").split(",")
+        if hyperparameters.get("categorical_columns", "") == "":
+            categorical_columns = []
+        else:
+            categorical_columns = hyperparameters.get("categorical_columns", "").split(",")
         train_data = _get_data('training', hyperparameters)
 
         X = train_data.columns
