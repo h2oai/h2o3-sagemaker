@@ -1,0 +1,262 @@
+[
+	{
+		"Name": "training",
+		"Description": "Training Parameters: family?, categorical_columns?, target?",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": true,
+		"DefaultValue": "{'family': gaussian, 'categorical_columns':'', 'target': 'label'}"
+	},
+	{
+		"Name": "alpha",
+		"Description": "Distribution of regularization between the L1 (Lasso) and L2 (Ridge) penalties.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "balance_classes",
+		"Description": "Balance training data class counts via over/under-sampling",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "beta_epsilon",
+		"Description": "Converge if beta changes less (using L-infinity norm) than beta esilon, ONLY applies to IRLSM solver",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "class_sampling_factors",
+		"Description": "Desired over/under-sampling ratios per class (in lexicographic order).",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "compute_p_values",
+		"Description": "Request p-values computation, p-values work only with IRLSM solver and no regularization",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "early_stopping",
+		"Description": "Stop early when there is no more relative improvement on train or validation",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "fold_assignment",
+		"Description": "Cross-validation fold assignment scheme, if fold_column is not specified.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "fold_column",
+		"Description": "Column with cross-validation fold index assignment per observation.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "gradient_epsilon",
+		"Description": "Converge if objective changes less (using L-infinity norm) than this, ONLY applies to L-BFGS solver.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "ignore_const_cols",
+		"Description": "Ignore constant columns.",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "ignored_columns",
+		"Description": "Names of columns to ignore for training",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "interactions",
+		"Description": "A list of predictor column indices to interact. All pairwise combinations will be computed for the list.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "intercept",
+		"Description": "Include constant term in the model",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "lambda_",
+		"Description": "Regularization strength",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "lambda_min_ratio",
+		"Description": "Minimum lambda used in lambda search",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "lambda_search",
+		"Description": "Use lambda search starting at lambda max, given lambda is then interpreted as lambda min",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "link",
+		"Description": "One of: family_default, identity, logit, log, inverse, tweedie, ologit, oprobit, ologlog ",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_active_predictors",
+		"Description": "Maximum number of active predictors during computation.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_after_balance_size",
+		"Description": "Maximum relative size of the training data after balancing class counts",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_hit_ratio_k",
+		"Description": "Maximum number (top K) of predictions to use for hit ratio computation",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_iterations",
+		"Description": "Maximum number of iterations",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_runtime_secs",
+		"Description": "Maximum allowed runtime in seconds for model training. Use 0 to disable.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "missing_values_handling",
+		"Description": "Handling of missing values. Either MeanImputation or Skip.",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nfolds",
+		"Description": "Number of folds for K-fold cross-validation (0 to disable or >= 2).",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nlambdas",
+		"Description": "Number of lambdas to be used in a search.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "non_negative",
+		"Description": "Restrict coefficients (not intercept) to be non-negative",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "obj_reg",
+		"Description": "Likelihood divider in objective value computation, default is 1/nobs",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "objective_epsilon",
+		"Description": "Converge if objective value changes less than this",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "offset_column",
+		"Description": "Offset column",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "prior",
+		"Description": "Prior probability for y==1. To be used only for logistic regression iff the data has been sampled and the mean of response does not reflect reality.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "remove_collinear_columns",
+		"Description": "In case of linearly dependent columns, remove some of the dependent columns",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "solver",
+		"Description": "One of: auto, irlsm, l_bfgs, coordinate_descent_naive, coordinate_descent, gradient_descent_lh, gradient_descent_sqerr (default: auto).",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "standardize",
+		"Description": "Standardize numeric columns to have zero mean and unit variance",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "tweedie_link_power",
+		"Description": "tweedie link power",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "tweedie_variance_power",
+		"Description": "tweedie variance power",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "weights_column",
+		"Description": "Column with observation weights.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	}
+]

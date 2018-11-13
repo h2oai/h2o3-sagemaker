@@ -35,7 +35,7 @@ import socket
 from collections import Counter
 import h2o
 import helper_functions
-from h2o.estimators.glm import H2OGeneralizedLinearEstimator
+from h2o.estimators.gbm import H2OGradientBoostingEstimator
 
 
 def _connect_to_cluster():
@@ -91,13 +91,13 @@ def _get_data(channel_name):
 
 
 def _train_model(hyperparameters={}, resource_params={}):
-    training_params_str, glm_params = helper_functions._parse_hyperparameters(hyperparameters)
+    training_params_str, gbm_params = helper_functions._parse_hyperparameters(hyperparameters)
     training_params = json.loads(training_params_str)
     prefix = "/opt/ml/"
     output_path = os.path.join(prefix, 'output')
     model_path = os.path.join(prefix, 'model')
 
-    glm_params['family'] = training_params['family']
+    gbm_params['distribution'] = training_params['distribution']
 
     print("Beginning Model Training")
     try:
@@ -114,24 +114,24 @@ def _train_model(hyperparameters={}, resource_params={}):
         except ValueError:
             raise ValueError('Incorrect target - column "%s" does not exist in the data!' % response_label)
 
-        print("Setting Response Column to Categorical based on family: {}".format(training_params.get('family', 'gaussian')))
-        if training_params.get('family', 'gaussian') in ['binomial', 'ordinal']:
-            print("Family is {}: setting target value to categorical".format(training_params.get('family', 'gaussian')))
+        print("Setting Response Column to Categorical based on family: {}".format(training_params.get('distribution', 'AUTO')))
+        if training_params.get('distribution', 'AUTO') in ['bernoulli', 'multinomial']:
+            print("Family is {}: setting target value to categorical".format(training_params.get('distribution', 'AUTO')))
             train_data[y] = train_data[y].asfactor()
         else:
-            print("Family is {}: Value can be continous. Nothing to do".format(training_params.get('family', 'gaussian')))
+            print("Family is {}: Value can be continous. Nothing to do".format(training_params.get('family', 'AUTO')))
 
         print("Converting specified columns to categorical values:")
         print(categorical_columns)
         for col in categorical_columns:
             train_data[col] = train_data[col].asfactor()
 
-        glm_model = H2OGeneralizedLinearEstimator(**glm_params)
-        glm_model.train(x=X, y=y, training_frame=train_data)
+        gbm_model = H2OGradientBoostingEstimator(**gbm_params)
+        gbm_model.train(x=X, y=y, training_frame=train_data)
 
-        print(glm_model.model_performance())
+        print(gbm_model.model_performance())
 
-        model_path = h2o.save_model(glm_model, path=model_path)
+        model_path = h2o.save_model(gbm_model, path=model_path)
         print("Model Path with Name: {}".format(model_path))
         print('Training complete.')
     except Exception as e:
