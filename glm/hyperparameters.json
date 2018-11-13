@@ -1,0 +1,5 @@
+{
+  "training": "{'target': 'CAPSULE', 'family': 'binomial', 'categorical_columns': 'RACE,DCAPS,DPROS'}",
+  "lambda_": 0,
+  "compute_p_values": true
+}

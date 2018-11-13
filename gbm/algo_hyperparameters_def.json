@@ -1,0 +1,291 @@
+[
+	{
+		"Name": "training",
+		"Description": "Training Parameters: distribution?, categorical_columns?, target?",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": true,
+		"DefaultValue": "{'distribution': AUTO, 'categorical_columns':'', 'target': 'label'}"
+	},
+	{
+		"Name": "balance_classes",
+		"Description": "Balance training data class counts via over/under-sampling",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "categorical_encoding",
+		"Description": "One of: auto, enum, one_hot_internal, one_hot_explicit, binary, eigen, label_encoder, sort_by_response, enum_limited (default: auto).",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "class_sampling_factors",
+		"Description": "Desired over/under-sampling ratios per class (in lexicographic order). (ex. '1.0,1.5,1.7')",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "col_sample_rate",
+		"Description": "Column sample rate (from 0.0 to 1.0)",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "col_sample_rate_change_per_level",
+		"Description": "Relative change of the column sampling rate for every level (must be > 0.0 and <= 2.0)",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "col_sample_rate_per_tree",
+		"Description": "Column sample rate per tree (from 0.0 to 1.0)",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "distribution",
+		"Description": "Distribution function",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "fold_assignment",
+		"Description": "Cross-validation fold assignment scheme, if fold_column is not specified.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "fold_column",
+		"Description": "Column with cross-validation fold index assignment per observation.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "histogram_type",
+		"Description": "What type of histogram to use for finding optimal split points",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "huber_alpha",
+		"Description": "Desired quantile for Huber/M-regression (threshold between quadratic and linear loss, must be between 0 and 1).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "ignore_const_cols",
+		"Description": "Ignore constant columns.",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "ignored_columns",
+		"Description": "Names of columns to ignore for training",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "learn_rate",
+		"Description": "Learning rate (from 0.0 to 1.0)",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "learn_rate_annealing",
+		"Description": "Scale the learning rate by this factor after each tree (e.g., 0.99 or 0.999)",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_abs_leafnode_pred",
+		"Description": "Maximum absolute value of a leaf node prediction",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_after_balance_size",
+		"Description": "Maximum relative size of the training data after balancing class counts",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_depth",
+		"Description": "Maximum tree depth.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_hit_ratio_k",
+		"Description": "Maximum number (top K) of predictions to use for hit ratio computation",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_runtime_secs",
+		"Description": "Maximum allowed runtime in seconds for model training. Use 0 to disable.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "min_rows",
+		"Description": "For numerical columns (real/int), build a histogram of (at least) this many bins, then split at the best point",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "min_split_improvement",
+		"Description": "Minimum relative improvement in squared error reduction for a split to happen",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nbins",
+		"Description": "For numerical columns (real/int), build a histogram of (at least) this many bins, then split at the best point",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nbins_cats",
+		"Description": "For categorical columns (factors), build a histogram of this many bins, then split at the best point. Higher values can lead to more overfitting.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nbins_top_level",
+		"Description": "For numerical columns (real/int), build a histogram of (at most) this many bins at the root level, then decrease by factor of two per level",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nfolds",
+		"Description": "Number of folds for K-fold cross-validation (0 to disable or >= 2).",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "ntrees",
+		"Description": "Number of trees.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "offset_column",
+		"Description": "Offset column. This will be added to the combination of columns before applying the link function.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+
+	{
+		"Name": "pred_noise_bandwidth",
+		"Description": "Bandwidth (sigma) of Gaussian multiplicative noise ~N(1,sigma) for tree node predictions",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "quantile_alpha",
+		"Description": "Desired quantile for Quantile regression, must be between 0 and 1.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "sample_rate",
+		"Description": "Row sample rate per tree (from 0.0 to 1.0)",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "sample_rate_per_class",
+		"Description": "A list of row sample rates per class (relative fraction for each class, from 0.0 to 1.0), for each tree, (ex. '1.3,1.1,0.5')",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "score_each_iteration",
+		"Description": "Whether to score during each iteration of model training.",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "score_tree_interval",
+		"Description": "Score the model after every so many trees. Disabled if set to 0.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "seed",
+		"Description": "Seed for pseudo random number generator",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "stopping_metric",
+		"Description": "One of: auto, deviance, logloss, mse, rmse, mae, rmsle, auc, lift_top_group, misclassification, mean_per_class_error (default: auto).",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "stopping_rounds",
+		"Description": "Early stopping based on convergence of stopping_metric.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "stopping_tolerance",
+		"Description": "Relative tolerance for metric-based stopping criterion",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "tweedie_power",
+		"Description": "tweedie power",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "weights_column",
+		"Description": "Column with observation weights.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	}
+]

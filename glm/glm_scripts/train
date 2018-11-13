@@ -34,78 +34,8 @@ import time
 import socket
 from collections import Counter
 import h2o
-from h2o.automl import H2OAutoML
-
-
-def _dns_lookup(host):
-    counter = 0
-    dns_resolved = False
-    while dns_resolved is False:
-        try:
-            print(socket.gethostbyname(host))
-            dns_resolved = True
-        except Exception as e:
-            time.sleep(10)
-            counter += 1
-            print("Waiting until DNS resolves: {}".format(counter))
-            if counter > 10:
-                raise Exception("Could not resolve DNS for Host: {}".format(host))
-
-
-def _get_parameters():
-    # Sagemaker expects things to go here
-    prefix = '/opt/ml/'
-    param_path = os.path.join(prefix, 'input/config/hyperparameters.json')
-    demo_path = '/opt/program/hyperparameters.json'
-    resource_path = os.path.join(prefix, 'input/config/resourceconfig.json')
-    user_config = False
-    # Ingest parameters for training from file hyperparameters.json
-    # Initialize some default parameters so that things fail safely
-    # if no parameters are specified
-
-    if os.path.isfile(param_path):
-        with open(param_path, 'r') as pf:
-            hyperparameters = json.load(pf)
-            user_config = True
-            print(param_path)
-            print('All Parameters:')
-            print(hyperparameters)
-
-    if hyperparameters == {}:
-        print("No hyperparameters were provided")
-        print("Falling back to demo hyperparameters path")
-        if os.path.isfile(demo_path):
-            with open(demo_path, 'r') as df:
-                hyperparameters = json.load(df)
-                print(demo_path)
-                print('All Parameters:')
-                print(hyperparameters)
-        else:
-            print("Demo file does not exist, falling back to defaults")
-            hyperparameters = {'training': {'classification': True,
-                                            'target': 'label'},
-                               'aml': {}}
-
-    if os.path.isfile(resource_path):
-        with open(resource_path, 'r') as rf:
-            resource_params = json.load(rf)
-            print(resource_path)
-            print('All Resources:')
-            print(resource_params)
-
-    return hyperparameters, resource_params, user_config
-
-
-def _create_h2o_cluster(resource_params={}):
-
-    with open("flatfile.txt", "w") as flatfile:
-        for host in resource_params['hosts']:
-            flatfile.write("{}:54321\n".format(host))
-        for host in resource_params['hosts']:
-            _dns_lookup(host)
-
-    os.system("./startup_h2o_cluster.sh > h2o.log 2> h2o_error.log &")
-    print("Starting up H2O-3")
+import helper_functions
+from h2o.estimators.glm import H2OGeneralizedLinearEstimator
 
 
 def _connect_to_cluster():
@@ -131,7 +61,7 @@ def _connect_to_cluster():
     h2o.connect(url="http://127.0.0.1:54321")
 
 
-def _get_data(channel_name, hyperparameters={}):
+def _get_data(channel_name):
     prefix = "/opt/ml/"
     input_path = prefix + 'input/data'
     training_path = os.path.join(input_path, channel_name)
@@ -160,21 +90,20 @@ def _get_data(channel_name, hyperparameters={}):
     return import_data
 
 
-def _train_model(user_config, hyperparameters={}, resource_params={}):
-    if user_config:
-        aml_params = json.loads(hyperparameters["aml"].replace("'", '"'))
-        training_params = json.loads(hyperparameters["training"].replace("'", '"'))
-    else:
-        aml_params = hyperparameters["aml"]
-        training_params = hyperparameters["training"]
+def _train_model(hyperparameters={}, resource_params={}):
+    training_params_str, glm_params = helper_functions._parse_hyperparameters(hyperparameters)
+    training_params = json.loads(training_params_str)
     prefix = "/opt/ml/"
     output_path = os.path.join(prefix, 'output')
     model_path = os.path.join(prefix, 'model')
 
+    glm_params['family'] = training_params['family']
+
     print("Beginning Model Training")
     try:
         response_label = training_params.get('target')
-        train_data = _get_data('training', hyperparameters)
+        categorical_columns = training_params.get("categorical_columns", []).split(",")
+        train_data = _get_data('training')
 
         X = train_data.columns
         y = response_label
@@ -185,21 +114,25 @@ def _train_model(user_config, hyperparameters={}, resource_params={}):
         except ValueError:
             raise ValueError('Incorrect target - column "%s" does not exist in the data!' % response_label)
 
-        if training_params.get('classification') == 'true':
-            print('Classification - If you want to do a regression instead, '
-                  'set "classification":"false" in the training_params dictionary in '
-                  'hyperparamters.json')
+        print("Setting Response Column to Categorical based on family: {}".format(training_params.get('family', 'gaussian')))
+        if training_params.get('family', 'gaussian') in ['binomial', 'ordinal']:
+            print("Family is {}: setting target value to categorical".format(training_params.get('family', 'gaussian')))
             train_data[y] = train_data[y].asfactor()
         else:
-            print('Regression - If you are solving a classification problem, '
-                  'set "classification":"true" in the training params dictionary')
+            print("Family is {}: Value can be continous. Nothing to do".format(training_params.get('family', 'gaussian')))
 
-        aml = H2OAutoML(**aml_params)
-        aml.train(x=X, y=y, training_frame=train_data)
+        print("Converting specified columns to categorical values:")
+        print(categorical_columns)
+        for col in categorical_columns:
+            train_data[col] = train_data[col].asfactor()
 
-        print(aml.leaderboard)
+        glm_model = H2OGeneralizedLinearEstimator(**glm_params)
+        glm_model.train(x=X, y=y, training_frame=train_data)
 
-        h2o.save_model(aml.leader, path=model_path)
+        print(glm_model.model_performance())
+
+        model_path = h2o.save_model(glm_model, path=model_path)
+        print("Model Path with Name: {}".format(model_path))
         print('Training complete.')
     except Exception as e:
         # Write out an error file. This will be returned as the failureReason
@@ -216,11 +149,11 @@ def _train_model(user_config, hyperparameters={}, resource_params={}):
 
 
 def main():
-    hyperparameters, resource_params, user_config = _get_parameters()
-    _create_h2o_cluster(resource_params)
+    hyperparameters, resource_params = helper_functions._get_parameters()
+    helper_functions._create_h2o_cluster(resource_params)
     if resource_params["current_host"] == resource_params["hosts"][0]:
         _connect_to_cluster()
-        _train_model(user_config, hyperparameters, resource_params)
+        _train_model(hyperparameters, resource_params)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,80 @@
+[
+	{
+		"Name": "training",
+		"Description": "Training Parameters: classification?, categorical_columns?, target?",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": true,
+		"DefaultValue": "{'classification': true, 'categorical_columns':'', 'target': 'label'}"
+	},
+	{
+		"Name": "max_models",
+		"Description": "Maximum number of models to build",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_runtime_secs",
+		"Description": "Controls how long the AutoML run will execute",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "stopping_metric",
+		"Description": "stops training new models in the AutoML run when the option selected for stopping_metric doesn’t improve for the specified number of models",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "stopping_rounds",
+		"Description": "Specifies the metric to use for early stopping.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "seed",
+		"Description": "seed for reproducibility",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "exclude_algos",
+		"Description": "List of algorithms to exclude/skip",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "stopping_tolerance",
+		"Description": "specifies the relative tolerance for the metric-based stopping to stop the AutoML run",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_after_balance_size",
+		"Description": "Maximum relative size of the training data after balancing class counts",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nfolds",
+		"Description": "Number of folds for k-folds cross validation",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "balance_classes",
+		"Description": "Balance training data class counts",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	}
+]
