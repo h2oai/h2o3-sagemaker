@@ -1,0 +1,4 @@
+{
+  "training": "{'target': 'response', 'classification': 'true'}",
+    "epochs":10
+}

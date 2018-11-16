@@ -1,0 +1,570 @@
+[
+	{
+		"Name": "training_frame",
+		"Description": "Id of the training data frame.",
+		"Type": "H2OFrame",
+		"IsTunable": false,
+		"IsRequired": true,
+		"DefaultValue": ""
+	},
+	{
+		"Name": "validation_frame",
+		"Description": "Id of the validation data frame.",
+		"Type": "H2OFrame",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nfolds",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "keep_cross_validation_models",
+		"Description": "",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "keep_cross_validation_predictions",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "keep_cross_validation_fold_assignment",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "fold_assignment",
+		"Description": "",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "fold_column",
+		"Description": "",
+		"Type": "response_column",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "ignored_columns",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "score_each_iteration",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "weights_column",
+		"Description": "",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "offset_column",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "balance_classes",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "class_sampling_factors",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "max_after_balance_size",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "max_confusion_matrix_size",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "pretrained_autoencoder",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "max_hit_ratio_k",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "check_point",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "overwrite_with_best_model",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "use_all_factor_levels",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "standardize",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	}
+    {
+		"Name": "activation",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "hidden",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "epochs",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "train_samples_per_iteration",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "target_ratio_comm_to_comp",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "seed",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "adaptive_rate",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "rho",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "epsilon",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "rate",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "rate_annealing",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "rate_decay",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "momentum_start",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "momentum_ramp",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "momentum_stable",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "nesterov_accelerated_gradient",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "input_dropout_ratio",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "hidden_dropout_ratios",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "l1",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "l2",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "max_w2",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "initial_weight_distribution",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "initial_weight_scale",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "initial_weights",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "initial_biases",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "loss",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "distribution",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "quantile_alpha",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+    {
+		"Name": "tweedie_power",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "huber_alpha",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "score_interval",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "score_interval",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "score_training_samples",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "score_validation_samples",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "score_duty_cycle",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "classification_stop",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "regression_stop",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "stopping_rounds",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "stopping_metric",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "stopping_tolerance",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "max_runtime_secs",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "score_validation_sampling",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "diagnostics",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "fast_mode",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "force_load_balance",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "variable_importances",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "replicate_training_data",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "single_node_mode",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "shuffle_training_data",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "missing_values_handling",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "quiet_mode",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "autoencoder",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "sparse",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "col_major",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "average_activation",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "sparsity_beta",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "max_categorical_features",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "reproducible",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "export_weights_and_biases",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "mini_batch_size",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "categorical_encoding",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "elastic_averaging",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "elastic_averaging_moving_rate",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+		"Name": "elastic_averaging_regularization",
+		"Description": "",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+    }
+]
