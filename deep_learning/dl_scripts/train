@@ -2,8 +2,8 @@
 
 """
 Simple example that integrates H2o AutoML functionality with Amazon Sagemaker.
-AutoML docs are over at:
-http://h2o-release.s3.amazonaws.com/h2o/rel-wheeler/2/docs-website/h2o-docs/automl.html
+DL docs are over at:
+http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/deep-learning.html
 
 This implementation works in File mode and makes no assumptions about the input
 file names. Input is specified as CSV with a data point in each row, the label
@@ -18,8 +18,8 @@ The hyperparameters.json file needs to have content similar to ->
                 'target': 'response',
             },
 'h2o': { Insert any H2O specific parameters here },
-'aml': { Insert any parameters you want to specify for AutoML here -
-        docs: http://docs.h2o.ai/h2o/latest-stable/h2o-docs/automl.html}
+'dl': { Insert any parameters you want to specify for Deep Learning here -
+        docs: http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/deep-learning.html}
 }
 
 """
