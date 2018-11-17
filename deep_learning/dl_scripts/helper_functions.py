@@ -77,19 +77,68 @@ def _parse_hyperparameters(hyperparameters_dict):
     training_params = training_params.replace("'", '"')
     algo_params = {}
 
-    algo_kwargs = ["nfolds", "balance_classes", "class_sampling_factors",
-                   "max_after_balance_size", "max_runtime_secs", "max_models",
-                   "stopping_metric", "stopping_rounds", "seed", "project_name",
-                   "exclude_algos", "keep_cross_validation_predictions",
-                   "keep_cross_validation_models",
+    algo_kwargs = ["activation", "adaptive_rate", "autoencoder",
+                   "average_activation", "balance_classes",
+                   "categorical_encoding", "checkpoint",
+                   "class_sampling_factors", "classification_stop",
+                   "diagnostics", "distribution", "elastic_averaging",
+                   "elastic_averaging_moving_rate",
+                   "elastic_averaging_regularization", "epochs", "epsilon",
+                   "export_weights_and_biases", "fast_mode", "fold_assignment",
+                   "fold_column", "force_load_balance", "hidden",
+                   "hidden_dropout_ratios", "huber_alpha", "ignore_const_cols",
+                   "ignored_columns", "initial_biases",
+                   "initial_weight_distribution", "initial_weight_scale",
+                   "initial_weights", "input_dropout_ratio",
                    "keep_cross_validation_fold_assignment",
-                   "sort_metric"]
-    list_kwargs = ["exclude_algos"]
-    int_kwargs = ["nfolds", "max_runtime_secs", "max_models", "stopping_rounds",
-                  "seed"]
-    float_kwargs = ["max_after_balance_size", "stopping_tolerance"]
-    bool_kwargs = ["balance_classes", "keep_cross_validation_fold_assignment",
-                   "keep_cross_validation_models"]
+                   "keep_cross_validation_models",
+                   "keep_cross_validation_predictions", "l1", "l2", "loss",
+                   "max_after_balance_size", "max_categorical_features",
+                   "max_hit_ratio_k", "max_runtime_secs", "max_w2",
+                   "mini_batch_size", "missing_values_handling",
+                   "momentum_ramp", "momentum_stable", "momentum_start",
+                   "nesterov_accelerated_gradient", "nfolds", "offset_column",
+                   "overwrite_with_best_model", "quantile_alpha", "quiet_mode",
+                   "rate", "rate_annealing", "rate_decay", "regression_stop",
+                   "replicate_training_data", "reproducible", "response_column",
+                   "rho", "score_duty_cycle", "score_each_iteration",
+                   "score_interval", "score_training_samples",
+                   "score_validation_samples", "score_validation_sampling",
+                   "seed", "shuffle_training_data", "single_node_mode",
+                   "sparse", "sparsity_beta", "standardize", "stopping_metric",
+                   "stopping_rounds", "stopping_tolerance",
+                   "target_ratio_comm_to_comp", "train_samples_per_iteration",
+                   "tweedie_power", "use_all_factor_levels",
+                   "variable_importances", "weights_column"]
+    list_kwargs = ["class_sampling_factors", "hidden", "hidden_dropout_ratios",
+                   "ignored_columns", "initial_biases", ""]
+    int_kwargs = ["max_categorical_features", "max_hit_ratio_k", "seed",
+                  "mini_batch_size", "nfolds", "score_training_samples",
+                  "score_validation_samples", "stopping_rounds",
+                  "train_samples_per_iteration"]
+    float_kwargs = ["average_activation", "classification_stop",
+                    "elastic_averaging_moving_rate",
+                    "elastic_averaging_regularization", "epochs", "epsilon",
+                    "huber_alpha", "initial_weight_scale",
+                    "input_dropout_ratio", "l1", "l2", "max_after_balance_size",
+                    "max_runtime_secs", "max_w2", "momentum_ramp",
+                    "momentum_stable", "momentum_start", "quantile_alpha",
+                    "rate", "rate_annealing", "rate_decay", "regression_stop",
+                    "rho", "score_duty_cycle", "score_interval",
+                    "sparsity_beta", "stopping_tolerance",
+                    "target_ratio_comm_to_comp", "tweedie_power"]
+    bool_kwargs = ["adaptive_rate", "autoencoder", "balance_classes",
+                   "diagnostics", "elastic_averaging",
+                   "export_weights_and_biases", "fast_mode",
+                   "force_load_balance", "ignore_const_cols",
+                   "keep_cross_validation_fold_assignment",
+                   "keep_cross_validation_models",
+                   "keep_cross_validation_predictions",
+                   "nesterov_accelerated_gradient", "overwrite_with_best_model",
+                   "quiet_mode", "replicate_training_data", "reproducible",
+                   "score_each_iteration", "shuffle_training_data", "sparse",
+                   "standardize", "use_all_factor_levels",
+                   "variable_importances"]
 
     for param in hyperparameters_dict.keys():
         if param in algo_kwargs:

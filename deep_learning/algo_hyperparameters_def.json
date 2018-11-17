@@ -1,51 +1,121 @@
 [
 	{
-		"Name": "training_frame",
-		"Description": "Id of the training data frame.",
+		"Name": "training",
+		"Description": "Training Parameters: classification?, categorical_columns?, target?",
 		"Type": "FreeText",
 		"IsTunable": false,
 		"IsRequired": true,
-		"DefaultValue": ""
+		"DefaultValue": "{'classification': true, 'categorical_columns':'', 'target': 'label'}"
 	},
 	{
-		"Name": "validation_frame",
-		"Description": "Id of the validation data frame.",
+		"Name": "activation",
+		"Description": "One of: tanh, tanh_with_dropout, rectifier, rectifier_with_dropout, maxout, maxout_with_dropout (default: rectifier).",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "adaptive_rate",
+		"Description": "Adaptive learning rate. (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "autoencoder",
+		"Description": "Auto-Encoder (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "average_activation",
+		"Description": "Average activation for sparse auto-encoder. #Experimental",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "balance_classes",
+		"Description": "Balance training data class counts via over/under-sampling (for imbalanced data).",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "categorical_encoding",
+		"Description": "One of: auto, enum, one_hot_internal, one_hot_explicit, binary, eigen, label_encoder, sort_by_response, enum_limited (default: auto).",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "class_sampling_factors",
+		"Description": "Desired over/under-sampling ratios per class (in lexicographic order). If not specified, sampling factors will be automatically computed to obtain class balance during training. Requires balance_classes.",
 		"Type": "FreeText",
 		"IsTunable": false,
 		"IsRequired": false
 	},
 	{
-		"Name": "nfolds",
-		"Description": "Number of folds for K-fold cross-validation (0 to disable or >= 2).",
-		"Type": "Integer",
+		"Name": "diagnostics",
+		"Description": "Enable diagnostics for hidden layers. (bool, True/False)",
+		"Type": "Categorical",
 		"IsTunable": false,
 		"IsRequired": false
 	},
 	{
-		"Name": "keep_cross_validation_models",
-		"Description": "whether to keep the cross-validation models.",
-		"Type": "FreeText",
+		"Name": "distribution",
+		"Description": "Distribution Function. One of: auto, bernoulli, multinomial, gaussian, poisson, gamma, tweedie, laplace, quantile, huber (default: auto).",
+		"Type": "Categorical",
 		"IsTunable": false,
 		"IsRequired": false
 	},
 	{
-		"Name": "keep_cross_validation_predictions",
-		"Description": "Whether to keep the predictions of the cross-validation models.",
-		"Type": "FreeText",
+		"Name": "elastic_averaging",
+		"Description": "Elastic averaging between compute nodes can improve distributed model convergence. #Experimental (bool, True/False)",
+		"Type": "Categorical",
 		"IsTunable": false,
 		"IsRequired": false
 	},
 	{
-		"Name": "keep_cross_validation_fold_assignment",
-		"Description": "Whether to keep the cross-validation fold assignment.",
-		"Type": "FreeText",
+		"Name": "elastic_averaging_moving_rate",
+		"Description": "Elastic averaging moving rate (only if elastic averaging is enabled).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "elastic_averaging_regularization",
+		"Description": "Elastic averaging regularization strength (only if elastic averaging is enabled).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "epochs",
+		"Description": "How many times the dataset should be iterated (streamed), can be fractional.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "epsilon",
+		"Description": "Adaptive learning rate smoothing factor (to avoid divisions by zero and allow progress).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "fast_mode",
+		"Description": "Enable fast mode (minor approximation in back-propagation). (bool, True/False)",
+		"Type": "Categorical",
 		"IsTunable": false,
 		"IsRequired": false
 	},
 	{
 		"Name": "fold_assignment",
-		"Description": "Cross-validation fold assignment scheme, if fold_column is not specified. The 'Stratified' option will stratify the folds based on the response variable, for classification problems.",
-		"Type": "FreeText",
+		"Description": "One of: auto, random, modulo, stratified (default: auto).",
+		"Type": "Categorical",
 		"IsTunable": false,
 		"IsRequired": false
 	},
@@ -57,527 +127,381 @@
 		"IsRequired": false
 	},
 	{
-		"Name": "ignored_columns",
-		"Description": "ames of columns to ignore for training.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-	{
-		"Name": "score_each_iteration",
-		"Description": "Ignore constant columns.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-	{
-		"Name": "weights_column",
-		"Description": "Column with observation weights. Giving some observation a weight of zero is equivalent to excluding it from the        dataset; giving an observation a relative weight of 2 is equivalent to repeating that row twice. Negative      weights are not allowed. Note: Weights are per-row observation weights and donot increase the size of the data        frame. This is typically the number of times a row is repeated, but non integer values are supported as well.        During training, rows with higher weights matter more, due to the larger loss function pre-factor.",
+		"Name": "force_load_balance",
+		"Description": "Force extra load balancing to increase training speed for small datasets (to keep all cores busy).",
 		"Type": "Categorical",
 		"IsTunable": false,
 		"IsRequired": false
 	},
-    {
-		"Name": "offset_column",
-		"Description": "Offset column. This will be added to the combination of columns before applying the link function.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "balance_classes",
-		"Description": "Balance training data class counts via over/under-sampling (for imbalanced data).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "class_sampling_factors",
-		"Description": "Desired over/under-sampling ratios per class (in lexicographic order). If not specified, sampling factors will be automatically computed to obtain class balance during training. Requires balance_classes.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "max_after_balance_size",
-		"Description": "Maximum relative size of the training data after balancing class counts (can be less than 1.0). Requires        balance_classes.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "max_confusion_matrix_size",
-		"Description": "[Deprecated] Maximum size (# classes) for confusion matrices to be printed in the Logs.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "pretrained_autoencoder",
-		"Description": "Pretrained autoencoder model to initialize this model with.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "max_hit_ratio_k",
-		"Description": "Max. number (top K) of predictions to use for hit ratio computation (for multi-class only, 0 to disable).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "check_point",
-		"Description": "Model checkpoint to resume training with.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "overwrite_with_best_model",
-		"Description": "If enabled, override the final model with the best model found during training.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "use_all_factor_levels",
-		"Description": "Use all factor levels of categorical variables. Otherwise, the first factor level is omitted (without loss of        accuracy). Useful for variable importances and auto-enabled for autoencoder.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "standardize",
-		"Description": "If enabled, automatically standardize the data. If disabled, the user must provide properly scaled input data.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	}
-    {
-		"Name": "activation",
-		"Description": "Activation Function",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
+	{
 		"Name": "hidden",
 		"Description": "Hidden layer sizes (e.g. [100, 100]).",
 		"Type": "FreeText",
 		"IsTunable": false,
 		"IsRequired": false
 	},
-    {
-		"Name": "epochs",
-		"Description": "How many times the dataset should be iterated (streamed), can be fractional.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "train_samples_per_iteration",
-		"Description": "Number of training samples (globally) per MapReduce iteration. Special values are 0: one epoch, -1: all        available data (e.g., replicated training data), -2: automatic.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "target_ratio_comm_to_comp",
-		"Description": "Target ratio of communication overhead to computation. Only for multi-node operation and        train_samples_per_iteration = -2 (auto-tuning).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "seed",
-		"Description": "Seed for random numbers (affects sampling) - Note: only reproducible when running single threaded.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "adaptive_rate",
-		"Description": "Adaptive learning rate.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "rho",
-		"Description": "Adaptive learning rate time decay factor (similarity to prior updates).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "epsilon",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "rate",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "rate_annealing",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "rate_decay",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "momentum_start",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "momentum_ramp",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "momentum_stable",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "nesterov_accelerated_gradient",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "input_dropout_ratio",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
+	{
 		"Name": "hidden_dropout_ratios",
-		"Description": "",
+		"Description": "Hidden layer dropout ratios (can improve generalization), specify one value per hidden layer, defaults to 0.5.",
 		"Type": "FreeText",
 		"IsTunable": false,
 		"IsRequired": false
 	},
-    {
-		"Name": "l1",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "l2",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "max_w2",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "initial_weight_distribution",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "initial_weight_scale",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "initial_weights",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "initial_biases",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "loss",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "distribution",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "quantile_alpha",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "tweedie_power",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
+	{
 		"Name": "huber_alpha",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "score_interval",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "score_interval",
-		"Description": "Shortest time interval (in seconds) between model scoring.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "score_training_samples",
-		"Description": "Number of training set samples for scoring (0 for all).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "score_validation_samples",
-		"Description": "Maximum duty cycle fraction for scoring (lower: more training, higher: more scoring).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "score_duty_cycle",
-		"Description": "Number of validation set samples for scoring (0 for all).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "classification_stop",
-		"Description": "Stopping criterion for classification error fraction on training data (-1 to disable).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "regression_stop",
-		"Description": "Stopping criterion for regression error (MSE) on training data (-1 to disable).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "stopping_rounds",
-		"Description": "Early stopping based on convergence of stopping_metric. Stop if simple moving average of length k of the stopping_metric does not improve for k:=stopping_rounds scoring events (0 to disable)",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "stopping_metric",
-		"Description": "Metric to use for early stopping (AUTO: logloss for classification, deviance for regression)",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "stopping_tolerance",
-		"Description": "Relative tolerance for metric-based stopping criterion (stop if relative improvement is not at least this much)",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "max_runtime_secs",
-		"Description": "Maximum allowed runtime in seconds for model training. Use 0 to disable.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "score_validation_sampling",
-		"Description": "Method used to sample validation dataset for scoring.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-    {
-		"Name": "diagnostics",
-		"Description": "Enable diagnostics for hidden layers",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "fast_mode",
-		"Description": "Enable fast mode (minor approximation in back-propagation).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "force_load_balance",
-		"Description": "Force extra load balancing to increase training speed for small datasets (to keep all cores busy).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "variable_importances",
-		"Description": "Compute variable importances for input features (Gedeon method) - can be slow for large networks.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "replicate_training_data",
-		"Description": "Replicate the entire training dataset onto every node for faster training on small datasets.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "single_node_mode",
-		"Description": "Run on a single node for fine-tuning of model parameters.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "shuffle_training_data",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "missing_values_handling",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "quiet_mode",
-		"Description": "",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "autoencoder",
-		"Description": "Auto-Encoder",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "sparse",
-		"Description": "Sparse data handling (more efficient for data with lots of 0 values).",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "col_major",
-		"Description": "#DEPRECATED Use a column major weight matrix for input layer. Can speed up forward propagation, but might slow down backpropagation.",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "average_activation",
-		"Description": "Average activation for sparse auto-encoder. #Experimental",
+		"Description": "Desired quantile for Huber/M-regression (threshold between quadratic and linear loss, must be between 0 and 1).",
 		"Type": "Continuous",
 		"IsTunable": false,
 		"IsRequired": false
 	},
-		"Name": "sparsity_beta",
-		"Description": "Sparsity regularization. #Experimental",
+	{
+		"Name": "ignore_const_cols",
+		"Description": "Ignore constant columns. (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "ignored_columns",
+		"Description": "Names of columns to ignore for training.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "initial_weight_distribution",
+		"Description": "Initial weight distribution. One of: uniform_adaptive, uniform, normal (default: uniform_adaptive).",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "initial_weight_scale",
+		"Description": "Uniform: -value…value, Normal: stddev.",
 		"Type": "Continuous",
 		"IsTunable": false,
 		"IsRequired": false
 	},
+	{
+		"Name": "input_dropout_ratio",
+		"Description": "Input layer dropout ratio (can improve generalization, try 0.1 or 0.2).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "l1",
+		"Description": "L1 regularization (can add stability and improve generalization, causes many weights to become 0).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "l2",
+		"Description": "L2 regularization (can add stability and improve generalization, causes many weights to be small.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "loss",
+		"Description": "Loss function. One of: automatic, cross_entropy, quadratic, huber, absolute, quantile (default: automatic).",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "max_after_balance_size",
+		"Description": "Maximum relative size of the training data after balancing class counts (can be less than 1.0). Requires balance_classes.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
 		"Name": "max_categorical_features",
 		"Description": "Max. number of categorical features, enforced via hashing. #Experimental",
-		"Type": "FreeText",
+		"Type": "Integer",
 		"IsTunable": false,
 		"IsRequired": false
 	},
-		"Name": "reproducible",
-		"Description": "Force reproducibility on small data (will be slow - only uses 1 thread).",
-		"Type": "FreeText",
+	{
+		"Name": "max_hit_ratio_k",
+		"Description": "Max. number (top K) of predictions to use for hit ratio computation (for multi-class only, 0 to disable).",
+		"Type": "Integer",
 		"IsTunable": false,
 		"IsRequired": false
 	},
-		"Name": "export_weights_and_biases",
-		"Description": "Whether to export Neural Network weights and biases to H2O Frames",
-		"Type": "FreeText",
+	{
+		"Name": "max_runtime_secs",
+		"Description": "Maximum allowed runtime in seconds for model training. Use 0 to disable.",
+		"Type": "Continuous",
 		"IsTunable": false,
 		"IsRequired": false
 	},
+	{
+		"Name": "max_w2",
+		"Description": "Constraint for squared sum of incoming weights per unit (e.g. for Rectifier).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
 		"Name": "mini_batch_size",
 		"Description": "Mini-batch size (smaller leads to better fit, larger can speed up and generalize better).",
 		"Type": "Integer",
 		"IsTunable": false,
 		"IsRequired": false
 	},
-		"Name": "categorical_encoding",
-		"Description": "Encoding scheme for categorical features",
-		"Type": "FreeText",
+	{
+		"Name": "missing_values_handling",
+		"Description": "Handling of missing values. Either MeanImputation or Skip. One of: mean_imputation, skip (default: mean_imputation).",
+		"Type": "Categorical",
 		"IsTunable": false,
 		"IsRequired": false
 	},
-		"Name": "elastic_averaging",
-		"Description": "Elastic averaging between compute nodes can improve distributed model convergence. #Experimental",
-		"Type": "FreeText",
-		"IsTunable": false,
-		"IsRequired": false
-	},
-		"Name": "elastic_averaging_moving_rate",
-		"Description": "Elastic averaging moving rate (only if elastic averaging is enabled).",
+	{
+		"Name": "momentum_ramp",
+		"Description": "Number of training samples for which momentum increases.",
 		"Type": "Continuous",
 		"IsTunable": false,
 		"IsRequired": false
 	},
-		"Name": "elastic_averaging_regularization",
-		"Description": "Elastic averaging regularization strength (only if elastic averaging is enabled).",
+	{
+		"Name": "momentum_stable",
+		"Description": "Final momentum after the ramp is over (try 0.99).",
 		"Type": "Continuous",
 		"IsTunable": false,
 		"IsRequired": false
-    }
+	},
+	{
+		"Name": "momentum_start",
+		"Description": "Initial momentum at the beginning of training (try 0.5).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nesterov_accelerated_gradient",
+		"Description": "Use Nesterov accelerated gradient (recommended). (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "nfolds",
+		"Description": "Number of folds for K-fold cross-validation (0 to disable or >= 2).",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "offset_column",
+		"Description": "Offset column. This will be added to the combination of columns before applying the link function.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "overwrite_with_best_model",
+		"Description": "If enabled, override the final model with the best model found during training. (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "quantile_alpha",
+		"Description": "Desired quantile for Quantile regression, must be between 0 and 1.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "quiet_mode",
+		"Description": "Enable quiet mode for less output to standard output.",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "rate",
+		"Description": "Learning rate annealing: rate / (1 + rate_annealing * samples).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "rate_decay",
+		"Description": "Learning rate decay factor between layers (N-th layer: rate * rate_decay ^ (n - 1).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "regression_stop",
+		"Description": "Stopping criterion for regression error (MSE) on training data (-1 to disable).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "replicate_training_data",
+		"Description": "Force reproducibility on small data (will be slow - only uses 1 thread). (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "reproducible",
+		"Description": "Force reproducibility on small data (will be slow - only uses 1 thread). (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "rho",
+		"Description": "Adaptive learning rate time decay factor (similarity to prior updates).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "score_duty_cycle",
+		"Description": "Maximum duty cycle fraction for scoring (lower: more training, higher: more scoring).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "score_each_iteration",
+		"Description": "Whether to score during each iteration of model training. (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "score_interval",
+		"Description": "Shortest time interval (in seconds) between model scoring.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "score_training_samples",
+		"Description": "Number of training set samples for scoring (0 for all).",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "score_validation_samples",
+		"Description": "Number of validation set samples for scoring (0 for all).",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "score_validation_sampling",
+		"Description": "One of: uniform, stratified (default: uniform).",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "seed",
+		"Description": "Seed for random numbers (affects sampling) - Note: only reproducible when running single threaded.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "shuffle_training_data",
+		"Description": "Enable shuffling of training data (recommended if training data is replicated and train_samples_per_iteration is close to #nodes x #rows, of if using balance_classes)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "sparse",
+		"Description": "Sparse data handling (more efficient for data with lots of 0 values). (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "sparsity_beta",
+		"Description": "Sparsity regularization. #Experimental",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "standardize",
+		"Description": "If enabled, automatically standardize the data. If disabled, the user must provide properly scaled input data. (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "stopping_metric",
+		"Description": "One of: auto, deviance, logloss, mse, rmse, mae, rmsle, auc, lift_top_group, misclassification, mean_per_class_error (default: auto).",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "stopping_rounds",
+		"Description": "Early stopping based on convergence of stopping_metric. Stop if simple moving average of length k of the stopping_metric does not improve for k:=stopping_rounds scoring events (0 to disable)",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "stopping_tolerance",
+		"Description": "Relative tolerance for metric-based stopping criterion (stop if relative improvement is not at least this much)",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "target_ratio_comm_to_comp",
+		"Description": "Target ratio of communication overhead to computation. Only for multi-node operation and train_samples_per_iteration = -2 (auto-tuning).",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "train_samples_per_iteration",
+		"Description": "Number of training samples (globally) per MapReduce iteration. Special values are 0: one epoch, -1: all available data (e.g., replicated training data), -2: automatic.",
+		"Type": "Integer",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "tweedie_power",
+		"Description": "Tweedie power for Tweedie regression, must be between 1 and 2.",
+		"Type": "Continuous",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "use_all_factor_levels",
+		"Description": "Use all factor levels of categorical variables. Otherwise, the first factor level is omitted (without loss of accuracy). Useful for variable importances and auto-enabled for autoencoder",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "variable_importances",
+		"Description": "Compute variable importances for input features (Gedeon method) - can be slow for large networks. (bool, True/False)",
+		"Type": "Categorical",
+		"IsTunable": false,
+		"IsRequired": false
+	},
+	{
+		"Name": "weights_column",
+		"Description": "Column with observation weights.",
+		"Type": "FreeText",
+		"IsTunable": false,
+		"IsRequired": false
+	},
 ]

@@ -135,7 +135,8 @@ def _train_model(hyperparameters={}, resource_params={}):
 
         print(dl.model_performance())
 
-        h2o.save_model(dl, path=model_path)
+        model_path = h2o.save_model(dl, path=model_path)
+        print("Model saved as: {}".format(model_path))
         print('Training complete.')
     except Exception as e:
         # Write out an error file. This will be returned as the failureReason
