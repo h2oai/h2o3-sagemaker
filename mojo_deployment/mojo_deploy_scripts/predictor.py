@@ -61,7 +61,8 @@ class ScoringService(object):
                 # run the 'train' script multiple times - this may still load
                 # the first model. An obvious to-do is to improve this :-)
                 if 'mojo' in file:
-                    os.system("unzip {} -d /opt/h2oai/dai".format(os.path.join(model_path, file)))
+                    os.system("rm -rf /opt/h2oai/dai/mojo-pipeline")
+                    os.system("cp -r {} /opt/h2oai/dai".format(os.path.join(model_path, file)))
                     break
         return True
 
@@ -99,7 +100,7 @@ class ScoringService(object):
             raise Exception("Error: {}, could not export data".format(e))
 
     @classmethod
-    def predict(cls, input_location, data_type):
+    def predict(cls, input_data, data_type, model_path):
         """
         Predict class and generate probabilities based on test data
 
@@ -113,10 +114,13 @@ class ScoringService(object):
         specific class
         """
         clf = cls.get_model()
-        os.system("java -Dai.h2o.mojos.runtime.license.file=/opt/h2oai/dai/mojo-pipeline/license.sig \
-                   -cp /opt/h2oai/dai/mojo-pipeline/mojo2-runtime.jar ai.h2o.mojos.ExecuteMojo \
-                   /opt/h2oai/dai/mojo-pipeline/pipeline.mojo \
-                   {} >> /opt/ml/output/output.csv".format(input_location))
+        print("TYPE OF INPUT: {}, VARIABLE. {}".format(type(input_data), input_data))
+        # df = pd.DataFrame(input_data)
+        # df.to_csv('/opt/ml/output/output.csv')
+        os.system("java -Dai.h2o.mojos.runtime.license.file={}/mojo-pipeline/license.sig \
+                   -cp {}/mojo-pipeline/mojo2-runtime.jar ai.h2o.mojos.ExecuteMojo \
+                   {}/mojo-pipeline/pipeline.mojo \
+                   {}".format(model_path, model_path, model_path, input_data))
         return "/opt/ml/output/output.csv"
 
 
@@ -153,7 +157,7 @@ def transformation():
         data = flask.request.data.decode('utf-8')
         s = StringIO(data)
         data = pd.read_csv(s)
-        data.to_csv("/opt/h2oai/dai/predict.csv")
+        data.to_csv("/opt/predict.csv")
         print("Invoked with {} records".format(data.shape[0]))
 
     else:
@@ -161,7 +165,7 @@ def transformation():
 
 
     # Do the actual prediction using the AutoML model that's been loaded
-    predictions = ScoringService.predict("/opt/h2oai/dai/predict.csv", data_type)
+    predictions = ScoringService.predict("/opt/predict.csv", data_type, model_path)
     out = StringIO()
     results = pd.read_csv(predictions)
     results.to_csv(out, header=True)
