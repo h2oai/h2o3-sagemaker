@@ -53,11 +53,6 @@ while h2o_launched is False:
 # path to license /opt/ml/input/license/license.sig
 # path to mojo runtime jar /opt/mojo-pipeline/mojo2-runtime-javadoc.jar
 
-    
-    os.system('unzip /opt/ml/model/mojo.zip /opt')   
+
+    os.system('unzip /opt/ml/model/mojo.zip /opt')
     subprocess.Popen('java -Dai.h2o.mojos.runtime.license.file=/opt/ml/input/license/license.sig -cp /opt/mojo2-runtime.jar ai.h2o.mojos.ExecuteMojo /opt/pipeline.mojo opt/ml/input/predict/example.csv >> /opt/ml/output/output.csv')
-
-         
-
-
-       

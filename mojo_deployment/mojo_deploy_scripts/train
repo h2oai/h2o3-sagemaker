@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+
+"""
+Simple example that integrates H2o AutoML functionality with Amazon Sagemaker.
+AutoML docs are over at:
+http://h2o-release.s3.amazonaws.com/h2o/rel-wheeler/2/docs-website/h2o-docs/automl.html
+
+This implementation works in File mode and makes no assumptions about the input
+file names. Input is specified as CSV with a data point in each row, the label
+column is specified via an optional hyperparamter - 'target', inside the
+'training_params' dictionary. If there's no target specified, we default to
+'label' as the target variable for the data.
+
+The hyperparameters.json file needs to have content similar to ->
+{
+'training': {
+                'classification': 'true',
+                'target': 'response',
+            },
+'h2o': { Insert any H2O specific parameters here },
+'aml': { Insert any parameters you want to specify for AutoML here -
+        docs: http://docs.h2o.ai/h2o/latest-stable/h2o-docs/automl.html}
+}
+
+"""
+
+from __future__ import print_function
+
+import os
+import sys
+import traceback
+
+
+def retrieve_model():
+
+    prefix = "/opt/ml"
+    input_path = prefix + "/input/data"
+    model_object_path = os.path.join(input_path, 'mojomodel')
+    license_path = os.path.join(input_path, 'license', "license.sig")
+    output_path = os.path.join(prefix, 'output')
+    model_path = os.path.join(prefix, 'model')
+
+    try:
+        model_list_path = [os.path.join(model_object_path, filename)
+                           for filename in os.listdir(model_object_path)
+                           if not filename.startswith(".")]
+        if len(model_list_path) == 1:
+            mojo_model = model_list_path[0]
+        else:
+            raise ValueError("There can only be one model in this directory")
+
+        model_path_complete = os.path.join(model_path, mojo_model.split("/")[-1])
+        print("SAVED MODEL TO: {}".format(model_path))
+        os.system("mv {} {}".format(mojo_model, model_path_complete))
+        os.system("unzip {} -d {}".format(model_path_complete, model_path))
+        os.system("mv {} {}".format(license_path, os.path.join(model_path, 'mojo-pipeline', 'license.sig')))
+        os.system("zip -r {} {}".format(model_path_complete, os.path.join(model_path, 'mojo-pipeline')))
+        print("COMPLETE")
+
+    except Exception as e:
+        # Write out an error file. This will be returned as the failureReason
+        # in the DescribeTrainingJob result.
+        trc = traceback.format_exc()
+        with open(os.path.join(output_path, 'failure'), 'w') as s:
+            s.write('Exception during training: ' + str(e) + '\n' + trc)
+
+        # Printing this causes the exception to be in the training job logs
+        print('Exception during training: ' + str(e) + '\n' + trc,
+              file=sys.stderr)
+        # A non-zero exit code causes the training job to be marked as Failed.
+        sys.exit(255)
+
+
+def main():
+    retrieve_model()
+
+
+if __name__ == '__main__':
+    main()
+    # A zero exit code causes the job to be marked a Succeeded.
+    sys.exit(0)

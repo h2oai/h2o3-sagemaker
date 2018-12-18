@@ -1,0 +1,79 @@
+# Build an image that can do training and inference in SageMaker using
+# H2o's automatic machine learning (AutoML)
+# http://h2o-release.s3.amazonaws.com/h2o/rel-wheeler/2/docs-website/h2o-docs/automl.html
+#
+# Dockerfile template adapted from
+# https://github.com/awslabs/amazon-sagemaker-examples/blob/master/advanced_functionality/scikit_bring_your_own/container/Dockerfile
+
+# Base image for Driverless AI Mojos in Kubeflow Pipelines
+# includes: java openjdk 8,
+# Maintainer: Nicholas Png
+# Contact: nicholas.png@h2o.ai
+
+FROM ubuntu:16.04
+
+ENV DAI_PYTHON_VERSION=master-42
+
+RUN apt-get -y update && \
+    apt-get -y --no-install-recommends install \
+      wget \
+      curl \
+      unzip \
+      zip \
+      apt-utils \
+      python-software-properties \
+      default-jre \
+      nginx \
+      lbzip2 \
+      libzmq-dev \
+      libblas-dev \
+      apache2-utils \
+      libssl-dev \
+      libffi-dev \
+      software-properties-common
+
+# Install Oracle Java 8
+RUN \
+    add-apt-repository -y ppa:webupd8team/java && \
+    apt-get update -q && \
+    echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+    echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y oracle-java8-installer && \
+    apt-get clean
+
+# Install DAI PYTHON for the purposes of having compatible python3.6
+RUN \
+    mkdir -p /opt/h2oai/dai/ && \
+    wget https://s3.amazonaws.com/artifacts.h2o.ai/releases/ai/h2o/dai-python/${DAI_PYTHON_VERSION}/x86_64-centos7/python.tar.bz2 && \
+    tar xf python.tar.bz2 && \
+    mv python /opt/h2oai/dai/ && \
+    rm python.tar.bz2
+
+RUN \
+  echo "export PATH=/python/bin:$PATH" >> /root/.bashrc && \
+  echo "export LD_LIBRARY_PATH=/python/lib" >> /root/.bashrc
+
+ENV LD_LIBRARY_PATH=/opt/h2oai/dai/python/lib
+
+COPY DAIMojoRestServer4-0.0.1-SNAPSHOT.jar /opt/h2oai/dai/DAIMojoRestServer4-0.0.1-SNAPSHOT.jar
+COPY mojo-startup.sh /mojo-startup.sh
+RUN chmod +x /mojo-startup.sh
+
+EXPOSE 8080
+
+# Set some environment variables. PYTHONUNBUFFERED keeps Python from buffering our standard
+# output stream, which means that logs can be delivered to the user quickly. PYTHONDONTWRITEBYTECODE
+# keeps Python from writing the .pyc files which are unnecessary in this case. We also update
+# PATH so that the train and serve programs are found when the container is invoked.
+
+ENV PYTHONUNBUFFERED=TRUE
+ENV PYTHONDONTWRITEBYTECODE=TRUE
+ENV PATH="/opt/program:/opt/h2oai/dai/python/bin:${PATH}"
+
+# Set up the program in the image
+COPY mojo_deploy_scripts /opt/program
+COPY hyperparameters.json /opt/program/hyperparameters.json
+WORKDIR /opt/program
+
+RUN ld -v
+RUN ldd --version
