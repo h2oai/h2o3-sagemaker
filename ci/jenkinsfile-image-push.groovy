@@ -1,5 +1,5 @@
 pipeline {
-    agent {label "mr-0x16"}
+    agent {label "linux && docker"}
     environment {
         AWS_ECR = "524466471676.dkr.ecr.us-east-2.amazonaws.com/"
         AWS_ECR_GLM = "524466471676.dkr.ecr.us-east-2.amazonaws.com/h2o-sagemaker-glm"
@@ -10,7 +10,7 @@ pipeline {
 
     parameters {
 
-        string(name: 'H2O-3-VERSION', defaultValue: 'h2o-3.40.0.2', description: 'Version of the H2O-3 product listed in http://h2o-release.s3.amazonaws.com/h2o/latest_stable')
+        string(name: 'H2O_3_VERSION', defaultValue: 'h2o-3.40.0.2', description: 'Version of the H2O-3 product listed in http://h2o-release.s3.amazonaws.com/h2o/latest_stable')
     }
 
 
@@ -19,10 +19,10 @@ pipeline {
         stage('1. Build Docker images ') {
             steps {
                 echo "Building Docker image"
-                sh "docker build --no-cache -t sagemaker-glm:${H2O-3-VERSION} -t sagemaker-glm:latest -f ${WORKSPACE}/glm/Dockerfile ."
-                sh "docker build --no-cache -t sagemaker-gbm:${H2O-3-VERSION} -t sagemaker-gbm:latest -f ${WORKSPACE}/gbm/Dockerfile ."
-                sh "docker build --no-cache -t sagemaker-automl:${H2O-3-VERSION} -t sagemaker-automl:latest -f ${WORKSPACE}/automl/Dockerfile ."                
-                sh "docker build --no-cache -t sagemaker-deeplearning:${H2O-3-VERSION} -t sagemaker-deeplearning:latest -f ${WORKSPACE}/deep_learning/Dockerfile ."                
+                sh "docker build --no-cache -t sagemaker-glm:${H2O_3_VERSION} -t sagemaker-glm:latest -f ${WORKSPACE}/glm/Dockerfile ."
+                sh "docker build --no-cache -t sagemaker-gbm:${H2O_3_VERSION} -t sagemaker-gbm:latest -f ${WORKSPACE}/gbm/Dockerfile ."
+                sh "docker build --no-cache -t sagemaker-automl:${H2O_3_VERSION} -t sagemaker-automl:latest -f ${WORKSPACE}/automl/Dockerfile ."                
+                sh "docker build --no-cache -t sagemaker-deeplearning:${H2O_3_VERSION} -t sagemaker-deeplearning:latest -f ${WORKSPACE}/deep_learning/Dockerfile ."                
             }
         }
 
@@ -46,24 +46,24 @@ def publishToECR() {
      """
 
     sh "docker tag h2o-sagemaker-glm:latest ${AWS_ECR_GLM}latest"
-    sh "docker tag h2o-sagemaker-glm:${H2O-3-VERSION} ${AWS_ECR_GLM}:${H2O-3-VERSION}"
+    sh "docker tag h2o-sagemaker-glm:${H2O_3_VERSION} ${AWS_ECR_GLM}:${H2O_3_VERSION}"
     sh "docker push ${AWS_ECR_GLM}:latest"
-    sh "docker push ${AWS_ECR_GLM}:${H2O-3-VERSION}"       
+    sh "docker push ${AWS_ECR_GLM}:${H2O_3_VERSION}"       
 
     sh "docker tag h2o-sagemaker-gbm:latest ${AWS_ECR_GBM}:latest"
-    sh "docker tag h2o-sagemaker-gbm:${H2O-3-VERSION} ${AWS_ECR_GBM}:${H2O-3-VERSION}"
+    sh "docker tag h2o-sagemaker-gbm:${H2O_3_VERSION} ${AWS_ECR_GBM}:${H2O_3_VERSION}"
     sh "docker push ${AWS_ECR_GBM}latest"
-    sh "docker push ${AWS_ECR_GBM}:${H2O-3-VERSION}"  
+    sh "docker push ${AWS_ECR_GBM}:${H2O_3_VERSION}"  
 
     sh "docker tag h2o-sagemaker-automl:latest ${AWS_ECR_AUTOML}:latest"
-    sh "docker tag h2o-sagemaker-automl:${H2O-3-VERSION} ${AWS_ECR_AUTOML}:${H2O-3-VERSION}"
+    sh "docker tag h2o-sagemaker-automl:${H2O_3_VERSION} ${AWS_ECR_AUTOML}:${H2O_3_VERSION}"
     sh "docker push ${AWS_ECR_AUTOML}:latest"
-    sh "docker push ${AWS_ECR_AUTOML}:${H2O-3-VERSION}"  
+    sh "docker push ${AWS_ECR_AUTOML}:${H2O_3_VERSION}"  
 
     sh "docker tag h2o-sagemaker-deeplearning:latest ${AWS_ECR_DEEPLEARNING}:latest"
-    sh "docker tag h2o-sagemaker-deeplearning:${H2O-3-VERSION} ${AWS_ECR_DEEPLEARNING}:${H2O-3-VERSION}"
+    sh "docker tag h2o-sagemaker-deeplearning:${H2O_3_VERSION} ${AWS_ECR_DEEPLEARNING}:${H2O_3_VERSION}"
     sh "docker push ${AWS_ECR_DEEPLEARNING}:latest"
-    sh "docker push ${AWS_ECR_DEEPLEARNING}:${H2O-3-VERSION}"  
+    sh "docker push ${AWS_ECR_DEEPLEARNING}:${H2O_3_VERSION}"  
 
     }
   }
