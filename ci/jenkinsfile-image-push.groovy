@@ -68,7 +68,7 @@ pipeline {
     }
 }
 
-def publishToECR(string SAGEMAKER_TYPE) {
+def publishToECR(SAGEMAKER_TYPE) {
      withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "awsArtifactsUploader"]]) {
      aws_ecr_pwd = sh(script: 'aws ecr get-login-password --region us-east-2', returnStdout: true).trim()
      sh """
