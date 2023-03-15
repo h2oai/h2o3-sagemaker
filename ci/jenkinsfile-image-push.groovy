@@ -75,7 +75,7 @@ def publishToECR(SAGEMAKER_TYPE) {
        docker login -u AWS -p "${aws_ecr_pwd}" ${AWS_ECR}
      """
 
-    sh "docker tag ${SAGEMAKER_TYPE}:latest ${AWS_ECR_GLM}latest"
+    sh "docker tag ${SAGEMAKER_TYPE}:latest ${AWS_ECR_GLM}:latest"
     sh "docker tag ${SAGEMAKER_TYPE}:${H2O_3_VERSION} ${AWS_ECR_GLM}:${H2O_3_VERSION}"
     sh "docker push ${AWS_ECR_GLM}:latest"
     sh "docker push ${AWS_ECR_GLM}:${H2O_3_VERSION}"       
