@@ -61,7 +61,7 @@ ENV PYTHONDONTWRITEBYTECODE=TRUE
 ENV PATH="/opt/program:${PATH}"
 
 # Set up the program in the image
-COPY glm_scripts /opt/program
+COPY /glm/glm_scripts /opt/program
 RUN chmod +x /opt/program/startup_h2o_cluster.sh
 WORKDIR /opt/program
 
