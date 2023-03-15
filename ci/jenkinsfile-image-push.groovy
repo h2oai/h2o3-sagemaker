@@ -25,7 +25,7 @@ pipeline {
             }
             steps {
                 echo "Building Docker image for H2O-3 Sagemaker GLM"
-                sh "docker build --no-cache -t h2o-sagemaker-glm:${H2O_3_VERSION} -t h2o-sagemaker-glm:latest -f ${WORKSPACE}/glm/Dockerfile.awslinux ."     
+                sh "docker build --no-cache -t h2o-sagemaker-glm:${H2O_3_VERSION} -t h2o-sagemaker-glm:latest -f ${WORKSPACE}/glm/Dockerfile.new ."     
                 echo "Push to ECR H2O-3 Sagemaker GLM"
                 script {
                     publishToECR("h2o-sagemaker-glm")
