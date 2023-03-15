@@ -25,7 +25,7 @@ pipeline {
             }
             steps {
                 echo "Building Docker image for H2O-3 Sagemaker GLM"
-                sh "docker build --no-cache -t h2o-sagemaker-glm:${H2O_3_VERSION} -t h2o-sagemaker-glm:latest -f ${WORKSPACE}/glm/Dockerfile ."     
+                sh "docker build --no-cache -t h2o-sagemaker-glm:${H2O_3_VERSION} -t h2o-sagemaker-glm:latest -f ${WORKSPACE}/glm/Dockerfile.awslinux ."     
                 echo "Push to ECR H2O-3 Sagemaker GLM"
                 script {
                     publishToECR("h2o-sagemaker-glm")
@@ -39,7 +39,7 @@ pipeline {
             }
             steps {
                 echo "Building Docker image for H2O-3 Sagemaker GBM"
-                sh "docker build --no-cache -t h2o-sagemaker-gbm:${H2O_3_VERSION} -t h2o-sagemaker-gbm:latest -f ${WORKSPACE}/gbm/Dockerfile ."     
+                sh "docker build --no-cache -t h2o-sagemaker-gbm:${H2O_3_VERSION} -t h2o-sagemaker-gbm:latest -f ${WORKSPACE}/gbm/Dockerfile.awslinux ."     
                 echo "Push to ECR H2O-3 Sagemaker GBM"
                 script {
                     publishToECR("h2o-sagemaker-gbm")
