@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 RUN apt-get -y update && apt-get -y upgrade && \
     apt-get -y --no-install-recommends install \
@@ -31,6 +31,7 @@ RUN apt-get -y install \
       python3-pandas \
       python3-numpy \
       python3-matplotlib \
+      gdebi \
       libxml2-dev \
       libssl-dev \
       libcurl4-openssl-dev \
@@ -63,6 +64,7 @@ ENV PATH="/opt/program:${PATH}"
 # Set up the program in the image
 COPY /glm/glm_scripts /opt/program
 RUN chmod +x /opt/program/startup_h2o_cluster.sh
+COPY hyperparameters.json /opt/program/hyperparameters.json
 WORKDIR /opt/program
 
 RUN ld -v
